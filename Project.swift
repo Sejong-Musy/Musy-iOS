@@ -40,7 +40,7 @@ let coreTarget = Target.target(
     destinations: [.iPad, .iPhone],
     product: .staticLibrary,
     bundleId: "com.Musy.Core",
-    sources: ["Core/Sources"],
+    sources: ["Core/Sources/**"],
     dependencies: [
         .target(sharedTarget)
     ])
