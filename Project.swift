@@ -29,7 +29,7 @@ let sharedTarget = Target.target(
     destinations: [.iPad, .iPhone],
     product: .staticLibrary,
     bundleId: "com.Musy.Shared",
-    sources: ["Shared/**"],
+    sources: ["Shared/Sources/**"],
     dependencies: [
         .target(designSystemTarget),
         .target(thirdPartyLibraryTarget)
