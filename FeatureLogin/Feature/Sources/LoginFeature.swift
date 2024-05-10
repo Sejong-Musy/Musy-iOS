@@ -5,11 +5,13 @@
 //  Created by 김도형 on 5/8/24.
 //
 
+import Shared
+import SharedThirdPartyLibrary
 import ComposableArchitecture
 import LoginInterface
 
 extension LoginFeature {
-    var body: some ReducerOf<Self> {
+    public var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
             case .loginButtonTapped:
