@@ -11,13 +11,24 @@ import SharedThirdPartyLibrary
 import ComposableArchitecture
 
 extension CreateMusicFeature {
-    var body: some ReducerOf<Self> {
-        Reduce { state, action in
+    public init() {
+        let reducer: Reduce<State, Action> = Reduce { state, action in
             switch action {
-            case .tagButtonTapped(let genre):
+            case .genreTagButtonTapped(let genre):
                 state.music.genre = genre
+                print(state.music.genre)
+                return .none
+            case .instrumentTagButtonTapped(let instrument):
+                guard !state.music.instruments.contains(instrument) else {
+                    state.music.instruments.remove(instrument)
+                    return .none
+                }
+                state.music.instruments.insert(instrument)
+                print(state.music.instruments)
                 return .none
             }
         }
+        
+        self.init(reducer: reducer)
     }
 }

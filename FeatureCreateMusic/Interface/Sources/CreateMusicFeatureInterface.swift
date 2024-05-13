@@ -20,8 +20,17 @@ public struct CreateMusicFeature {
     }
     
     public enum Action {
-        case tagButtonTapped(Music.Genre)
+        case genreTagButtonTapped(Music.Genre)
+        case instrumentTagButtonTapped(Music.Instrument)
     }
     
-    public init() {}
+    private let reducer: Reduce<State, Action>
+    
+    public init(reducer: Reduce<State, Action>) {
+        self.reducer = reducer
+    }
+    
+    public var body: some ReducerOf<Self> {
+        reducer
+    }
 }

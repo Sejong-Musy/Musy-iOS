@@ -7,11 +7,13 @@
 
 import SwiftUI
 import CreateMusicInterface
+import CreateMusicTesting
 import Domain
 import Shared
 import SharedDesignSystem
 import SharedThirdPartyLibrary
 import ComposableArchitecture
+import SwiftUIFlowLayout
 
 public struct CreateMusicView: View, CreateMusciViewInterface {
     private let store: StoreOf<CreateMusicFeature>
@@ -26,6 +28,8 @@ public struct CreateMusicView: View, CreateMusciViewInterface {
                 .padding(.top, 120)
             
             genre
+            
+            intstrument
             
             Spacer()
         }
@@ -79,28 +83,41 @@ public struct CreateMusicView: View, CreateMusciViewInterface {
                 .font(.musy(weight: .medium, size: 16))
                 .foregroundStyle(.white)
             
-            LazyVGrid(columns: [
-                .init(.flexible(minimum: 20, maximum: 100)),
-                .init(.flexible(minimum: 20, maximum: 100)),
-                .init(.flexible(minimum: 20, maximum: 100))
-            ],
-            alignment: .leading,
-            spacing: 10) {
-                ForEach(Music.Genre.allCases, id: \.rawValue) { genre in
-                    let isSelected = store.music.genre == genre
-                    
-                    tagButton(title: genre.rawValue, isSelected: isSelected) {
-                        store.send(.tagButtonTapped(genre), animation: .smooth)
-                    }
-                    .fixedSize(horizontal: true, vertical: /*@START_MENU_TOKEN@*/true/*@END_MENU_TOKEN@*/)
+            FlowLayout(mode: .vstack, items: Music.Genre.allCases, itemSpacing: 4) { genre in
+                let isSelected = store.music.genre == genre
+                
+                tagButton(title: genre.rawValue, isSelected: isSelected) {
+                    store.send(.genreTagButtonTapped(genre), animation: .smooth)
                 }
+                .padding(.bottom, 4)
             }
+            .padding(-4)
+            .padding(.bottom, -4)
+        }
+    }
+    
+    private var intstrument: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("악기")
+                .font(.musy(weight: .medium, size: 16))
+                .foregroundStyle(.white)
+            
+            FlowLayout(mode: .vstack, items: Music.Instrument.allCases, itemSpacing: 4) { intstrument in
+                let isSelected = store.music.instruments.contains(intstrument)
+                
+                tagButton(title: intstrument.rawValue, isSelected: isSelected) {
+                    store.send(.instrumentTagButtonTapped(intstrument), animation: .smooth)
+                }
+                .padding(.bottom, 4)
+            }
+            .padding(-4)
+            .padding(.bottom, -4)
         }
     }
 }
 
 #Preview {
     CreateMusicView(store: .init(initialState: .init(), reducer: {
-        CreateMusicFeature()
+        CreateMusicFeature.preview
     }))
 }
