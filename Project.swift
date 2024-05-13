@@ -8,17 +8,19 @@ import ProjectDescription
 
 let designSystemTarget = Target.target(
     name: "SharedDesignSystem",
-    destinations: [.iPad, .iPhone],
-    product: .staticLibrary,
+    destinations: .iOS,
+    product: .framework,
     bundleId: "com.Musy.Shared.DesignSystem",
+    deploymentTargets: .iOS("17.0"),
     sources: ["Shared/DesignSystem/Sources/**"],
     resources: ["Shared/DesignSystem/Resources/**"])
 
 let thirdPartyLibraryTarget = Target.target(
     name: "SharedThirdPartyLibrary",
-    destinations: [.iPad, .iPhone],
-    product: .staticLibrary,
+    destinations: .iOS,
+    product: .framework,
     bundleId: "com.Musy.Shared.ThirdPartyLibrary",
+    deploymentTargets: .iOS("17.0"),
     sources: ["Shared/ThirdPartyLibrary/Sources/**"],
     dependencies: [
         .package(product: "ComposableArchitecture", type: .macro)
@@ -26,10 +28,11 @@ let thirdPartyLibraryTarget = Target.target(
 
 let sharedTarget = Target.target(
     name: "Shared",
-    destinations: [.iPad, .iPhone],
-    product: .staticLibrary,
+    destinations: .iOS,
+    product: .framework,
     bundleId: "com.Musy.Shared",
-    sources: ["Shared/**"],
+    deploymentTargets: .iOS("17.0"),
+    sources: ["Shared/Sources/**"],
     dependencies: [
         .target(designSystemTarget),
         .target(thirdPartyLibraryTarget)
@@ -37,9 +40,10 @@ let sharedTarget = Target.target(
 
 let coreTarget = Target.target(
     name: "Core",
-    destinations: [.iPad, .iPhone],
-    product: .staticLibrary,
+    destinations: .iOS,
+    product: .framework,
     bundleId: "com.Musy.Core",
+    deploymentTargets: .iOS("17.0"),
     sources: ["Core/Sources/**"],
     dependencies: [
         .target(sharedTarget)
@@ -47,9 +51,10 @@ let coreTarget = Target.target(
 
 let domainTarget = Target.target(
     name: "Domain",
-    destinations: [.iPad, .iPhone],
-    product: .staticLibrary,
+    destinations: .iOS,
+    product: .framework,
     bundleId: "com.Musy.Domain",
+    deploymentTargets: .iOS("17.0"),
     sources: ["Domain/Sources/**"],
     dependencies: [
         .target(coreTarget)
@@ -60,7 +65,7 @@ enum Feature: String, CaseIterable {
     case musicList = "MusicList"
     case signIn = "SignIn"
     case login = "Login"
-    case main = "Main"
+    case home = "Home"
     
     var interface: Target {
         var anotherFeature: [TargetDependency] {
@@ -71,7 +76,7 @@ enum Feature: String, CaseIterable {
                 return [
                     .target(name: "\(Feature.signIn.rawValue)Interface")
                 ]
-            case .main:
+            case .home:
                 return [
                     .target(name: "\(Feature.login.rawValue)Interface"),
                     .target(name: "\(Feature.createMusic.rawValue)Interface"),
@@ -86,9 +91,10 @@ enum Feature: String, CaseIterable {
         
         let interface = Target.target(
             name: "\(self.rawValue)Interface",
-            destinations: [.iPhone, .iPad],
-            product: .staticLibrary,
+            destinations: .iOS,
+            product: .framework,
             bundleId: "com.Musy.\(self.rawValue).Interface",
+            deploymentTargets: .iOS("17.0"),
             sources: ["Feature\(self.rawValue)/Interface/Sources/**"],
             dependencies: [
                 .target(domainTarget),
@@ -100,9 +106,10 @@ enum Feature: String, CaseIterable {
     var testing: Target {
         let testing = Target.target(
             name: "\(self.rawValue)Testing",
-            destinations: [.iPhone, .iPad],
-            product: .staticLibrary,
+            destinations: .iOS,
+            product: .framework,
             bundleId: "com.Musy.\(self.rawValue).testing",
+            deploymentTargets: .iOS("17.0"),
             sources: ["Feature\(self.rawValue)/Testing/Sources/**"],
             dependencies: [
                 .target(interface)
@@ -114,9 +121,10 @@ enum Feature: String, CaseIterable {
     var feature: Target {
         let feature = Target.target(
             name: "\(self.rawValue)Feature",
-            destinations: [.iPhone, .iPad],
-            product: .staticFramework,
+            destinations: .iOS,
+            product: .framework,
             bundleId: "com.Musy.\(self.rawValue).feature",
+            deploymentTargets: .iOS("17.0"),
             sources: ["Feature\(self.rawValue)/Feature/Sources/**"],
             dependencies: [
                 .target(interface)
@@ -128,9 +136,10 @@ enum Feature: String, CaseIterable {
     var tests: Target {
         let tests = Target.target(
             name: "\(self.rawValue)Tests",
-            destinations: [.iPhone, .iPad],
+            destinations: .iOS,
             product: .unitTests,
             bundleId: "com.Musy.\(self.rawValue).tests",
+            deploymentTargets: .iOS("17.0"),
             sources: ["Feature\(self.rawValue)/Tests/Sources/**"],
             dependencies: [
                 .target(testing),
@@ -143,10 +152,13 @@ enum Feature: String, CaseIterable {
     var example: Target {
         let example = Target.target(
             name: "\(self.rawValue)Example",
-            destinations: [.iPhone, .iPad],
+            destinations: .iOS,
             product: .app,
             bundleId: "com.Musy.\(self.rawValue).example",
+            deploymentTargets: .iOS("17.0"),
+            infoPlist: .file(path: .relativeToRoot("Feature\(self.rawValue)/Example/Resources/\(self.rawValue)DemoApp-Info.plist")),
             sources: ["Feature\(self.rawValue)/Example/Sources/**"],
+            resources: ["Feature\(self.rawValue)/Example/Resources/**"],
             dependencies: [
                 .target(feature),
                 .target(testing)
@@ -167,12 +179,10 @@ let appTarget = Target.target(
     destinations: .iOS,
     product: .app,
     bundleId: "com.Musy.App",
-    infoPlist: .extendingDefault(
-        with: [
-            "UILaunchStoryboardName": "LaunchScreen.storyboard",
-        ]
-    ),
+    deploymentTargets: .iOS("17.0"),
+    infoPlist: .file(path: .relativeToRoot("App/Resources/MusyApp-Info.plist")),
     sources: ["App/Sources/**"],
+    resources: ["App/Resources/**"],
     dependencies: features.map { TargetDependency.target($0) }
 )
 
