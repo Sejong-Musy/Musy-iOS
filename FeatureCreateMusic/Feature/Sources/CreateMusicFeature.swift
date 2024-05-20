@@ -26,6 +26,23 @@ extension CreateMusicFeature {
                 state.music.instruments.insert(instrument)
                 print(state.music.instruments)
                 return .none
+            case .nextButtonTapped:
+                guard !state.music.instruments.isEmpty else {
+                    return .none
+                }
+                state.phase = .length
+                return .none
+            case .lengthDoneButtonTapped:
+                state.phase = .confirm
+                return .none
+            case .completeButtonTapped:
+                state.phase = .complete
+                return .none
+            case .moveMusicListButtonTapped:
+                return .none
+            case .setLength(let length):
+                state.second = length
+                return .none
             }
         }
         

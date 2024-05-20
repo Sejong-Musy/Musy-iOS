@@ -24,7 +24,8 @@ let thirdPartyLibraryTarget = Target.target(
     sources: ["Shared/ThirdPartyLibrary/Sources/**"],
     dependencies: [
         .package(product: "ComposableArchitecture", type: .macro),
-        .package(product: "SwiftUIFlowLayout")
+        .package(product: "SwiftUIFlowLayout"),
+        .package(product: "SwiftUIIntrospect")
     ])
 
 let sharedTarget = Target.target(
@@ -191,7 +192,8 @@ let project = Project(
     name: "Musy",
     packages: [
         .remote(url: "https://github.com/pointfreeco/swift-composable-architecture", requirement: .upToNextMajor(from: "1.10.1")),
-        .remote(url: "https://github.com/globulus/swiftui-flow-layout", requirement: .upToNextMajor(from: "1.0.4"))
+        .remote(url: "https://github.com/globulus/swiftui-flow-layout", requirement: .upToNextMajor(from: "1.0.4")),
+        .remote(url: "https://github.com/siteline/swiftui-introspect", requirement: .upToNextMajor(from: "1.1.4"))
     ],
     targets: featureInterfaces +
     feautureTesting +

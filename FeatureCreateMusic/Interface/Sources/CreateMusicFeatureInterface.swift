@@ -15,6 +15,8 @@ public struct CreateMusicFeature {
     @ObservableState
     public struct State: Equatable {
         public var music: Music = .init(memberId: .init())
+        public var phase: CreateMusicPhase = .tag
+        public var second: Int = 150
         
         public init() {}
     }
@@ -22,6 +24,11 @@ public struct CreateMusicFeature {
     public enum Action {
         case genreTagButtonTapped(Music.Genre)
         case instrumentTagButtonTapped(Music.Instrument)
+        case nextButtonTapped
+        case lengthDoneButtonTapped
+        case completeButtonTapped
+        case moveMusicListButtonTapped
+        case setLength(Int)
     }
     
     private let reducer: Reduce<State, Action>
@@ -32,5 +39,14 @@ public struct CreateMusicFeature {
     
     public var body: some ReducerOf<Self> {
         reducer
+    }
+}
+
+extension CreateMusicFeature {
+    public enum CreateMusicPhase {
+        case tag
+        case length
+        case confirm
+        case complete
     }
 }

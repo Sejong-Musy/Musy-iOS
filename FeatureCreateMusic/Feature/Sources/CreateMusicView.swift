@@ -7,32 +7,46 @@
 
 import SwiftUI
 import CreateMusicInterface
-import CreateMusicTesting
 import Domain
 import Shared
 import SharedDesignSystem
 import SharedThirdPartyLibrary
 import ComposableArchitecture
 import SwiftUIFlowLayout
+import SwiftUIIntrospect
 
 public struct CreateMusicView: View, CreateMusciViewInterface {
-    private let store: StoreOf<CreateMusicFeature>
+    @Bindable var store: StoreOf<CreateMusicFeature>
+    @State private var minute: Int = 2
+    @State private var second: Int = 30
     
     public init(store: StoreOf<CreateMusicFeature>) {
         self.store = store
     }
     
     public var body: some View {
-        VStack(alignment: .leading, spacing: 36) {
-            title
-                .padding(.top, 120)
+        Group {
+            switch store.phase {
+            case .tag:
+                tagSelection
+                    .transition(
+                        .move(edge: .bottom)
+                        .combined(with: .blurReplace)
+                        .combined(with: .opacity))
+            case .length:
+                lengthSelection
+                    .transition(
+                        .move(edge: .bottom)
+                        .combined(with: .blurReplace)
+                        .combined(with: .opacity))
+            case .confirm:
+                EmptyView()
+            case .complete:
+                EmptyView()
+            }
             
-            genre
-            
-            intstrument
-            
-            Spacer()
         }
+        .padding(.top, 120)
         .padding(.horizontal, 32)
         .background {
             LinearGradient.musyBright
@@ -40,7 +54,24 @@ public struct CreateMusicView: View, CreateMusciViewInterface {
         .ignoresSafeArea()
     }
     
-    private var title: some View {
+    private var tagSelection: some View {
+        VStack(spacing: 36) {
+            tagTitle
+            
+            genre
+            
+            intstrument
+            
+            Spacer()
+            
+            nextButton(title: "다음으로") {
+                store.send(.nextButtonTapped, animation: .smooth(duration: 0.7))
+            }
+            .padding(.bottom, 72)
+        }
+    }
+    
+    private var tagTitle: some View {
         HStack {
             VStack (alignment: .leading, spacing: 10) {
                 Text("태그 선정하기")
@@ -114,10 +145,128 @@ public struct CreateMusicView: View, CreateMusciViewInterface {
             .padding(.bottom, -4)
         }
     }
+    
+    private var lengthSelection: some View {
+        VStack(spacing: 0) {
+            lengthTitle
+            
+            Spacer()
+            
+            lengthList
+            
+            Spacer()
+            
+            nextButton(title: "선택완료") {
+                store.send(.lengthDoneButtonTapped, animation: .smooth)
+            }
+            .padding(.bottom, 72)
+        }
+    }
+    
+    private var lengthTitle: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("길이 선정하기")
+                    .font(.musy(weight: .medium, size: 24))
+                
+                Text("이제 마지막 단계예요, 원하시는 길이를 선정해주세요")
+                    .font(.musy(weight: .light, size: 14))
+            }
+            .foregroundStyle(.white)
+            
+            Spacer()
+        }
+    }
+    
+    private var lengthList: some View {
+        VStack {
+            Spacer(minLength: 60)
+            
+            HStack(spacing: 0) {
+                Picker("", selection: $minute) {
+                    ForEach(1..<10) { minute in
+                        Text(String(format: "%02d", minute))
+                            .font(.musy(weight: .medium, size: 20))
+                            .foregroundStyle(.white)
+                    }
+                }
+                .pickerStyle(.wheel)
+                .scaleEffect(2.5)
+                .introspect(.picker(style: .wheel), on: .iOS(.v17)) { picker in
+                    picker.subviews[1].backgroundColor = UIColor.clear
+                }
+                .frame(width: 100)
+                
+                Text(":")
+                    .font(.musy(weight: .medium, size: 48))
+                    .foregroundStyle(.white)
+                
+                Picker("", selection: $second) {
+                    ForEach(0..<60) { second in
+                        Text("\(second)")
+                            .font(.musy(weight: .medium, size: 20))
+                            .foregroundStyle(.white)
+                    }
+                }
+                .pickerStyle(.wheel)
+                .scaleEffect(2.5)
+                .introspect(.picker(style: .wheel), on: .iOS(.v17)) { picker in
+                    picker.subviews[1].backgroundColor = UIColor.clear
+                }
+                .frame(width: 100)
+            }
+            .background {
+                VStack(spacing: 72) {
+                    LinearGradient(
+                        gradient: Gradient(
+                            colors: [
+                                .musyRed,
+                                .white
+                            ]),
+                        startPoint: .leading,
+                        endPoint: .trailing)
+                    .frame(height: 1)
+                    
+                    LinearGradient(
+                        gradient: Gradient(
+                            colors: [
+                                .musyRed,
+                                .white
+                            ]),
+                        startPoint: .leading,
+                        endPoint: .trailing)
+                    .frame(height: 1)
+                }
+                .padding(.horizontal, 20)
+            }
+        }
+        .frame(height: 260)
+        .clipped()
+        .padding(.bottom, 60)
+    }
+    
+    @ViewBuilder
+    private func nextButton(
+        title: String,
+        action: @escaping () -> Void) -> some View {
+            Button(action: action) {
+                Text(title)
+                    .font(.musy(weight: .medium, size: 16))
+                    .foregroundStyle(.white)
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 16)
+                    .background {
+                        RoundedRectangle(cornerRadius: 24, style: .continuous)
+                            .fill(.musyRed.opacity(0.82))
+                    }
+            }
+        }
 }
 
 #Preview {
     CreateMusicView(store: .init(initialState: .init(), reducer: {
-        CreateMusicFeature.preview
+        CreateMusicFeature(reducer: .init({ state, action in
+            return .none
+        }))
     }))
 }
