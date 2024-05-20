@@ -51,7 +51,7 @@ public struct SignInView: View, SignInViewInterface {
     
     public var congrats: some View {
         VStack {
-            Image("congrats")
+            Image.congrats
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 224, height: 90)
