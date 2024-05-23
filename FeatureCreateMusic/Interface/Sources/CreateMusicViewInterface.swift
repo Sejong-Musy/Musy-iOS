@@ -9,7 +9,6 @@ import SwiftUI
 import Shared
 import SharedThirdPartyLibrary
 import ComposableArchitecture
-import CreateMusicInterface
 
 public protocol CreateMusicViewInterface where Self: View {
     init(store: StoreOf<CreateMusicFeature>)

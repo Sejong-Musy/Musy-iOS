@@ -17,6 +17,7 @@ public struct CreateMusicFeature {
     }
     
     public enum Action {
+        case playBtnTapped
     }
     
     public init() {}
