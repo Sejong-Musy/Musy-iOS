@@ -1,8 +1,20 @@
 //
-//  tmp.swift
-//  interest-iOSManifests
+//  SiginInFeature.swift
+//  CreateMusicInterface
 //
-//  Created by 송영모 on 11/2/23.
+//  Created by 박근경 on 2024/05/20.
 //
 
-import Foundation
+import Shared
+import SharedThirdPartyLibrary
+import ComposableArchitecture
+import CreateMusicInterface
+
+extension CreateMusicFeature {
+    public var body: some ReducerOf<Self> {
+        Reduce { state, action in
+            switch action {
+            }
+        }
+    }
+}
